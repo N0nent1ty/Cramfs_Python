@@ -1,0 +1,50 @@
+
+
+
+struct CramFSsuper{
+        uint magic;
+        uint size;
+        uint flags;
+        uint future;
+        char signature[16];
+        struct cramfs_info{
+            uint crc;
+            uint size;
+            uint blocks;
+            uint files;
+        }cramfsInfo;
+        char name[16];
+        struct cramfs_inode{
+            uint mode:16;
+            uint uid:16;
+            uint size:24;
+            uint gid:8;
+            uint namelen:6;
+            uint offset:26;
+          }node;
+
+}super_block;
+
+
+   struct cramfs_chinode{
+            uint mode:16;
+            uint uid:16;
+            uint size:24;
+            uint gid:8;
+            uint namelen:6;
+            uint offset:26;
+          }childInode;
+
+       local int count=super_block.node.size;
+       local int nextNodeOffset=super_block.node.offset*4;
+        while(count>0){
+        FSeek(nextNodeOffset);
+        struct cramfs_chinode cnode;
+        struct sfilename{
+        char filename_string[cnode.namelen*4];
+    }filename;
+        nextNodeOffset=nextNodeOffset+cnode.namelen*4+12;
+        count=count-(cnode.namelen*4+12);
+}//end while;
+
+//CramFSsuper C;
